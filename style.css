@@ -13,6 +13,7 @@
   --light-grey: #6a7480;
   --pink: #e5c9c5;
   --green: #def4b3;
+  --dark-green: #49af41;
   --red: #e53526;
   --font-regular: 500;
   --font-light: 100;
@@ -102,6 +103,19 @@ html {
     border: 1px solid var(--white);
 }
 
+.alert {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.alert--error {
+  color: var(--red);
+}
+
+.alert--success {
+  color: var(--dark-green);
+}
+
 
 .data {
   flex: 1;
@@ -153,4 +167,5 @@ html {
 
 .control__item i {
   color: var(--red);
+  pointer-events: none;
 }
