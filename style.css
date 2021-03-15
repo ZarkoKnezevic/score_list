@@ -33,7 +33,7 @@ html {
   height: 34rem;
   background: url(./score_list_placeholder.png) center no-repeat;
   background-size: contain;
-  opacity: 0.4;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -46,6 +46,9 @@ html {
   width: 100%;
   margin-bottom: 2.5rem;
   display: flex;
+  border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 
 .info__item {
@@ -66,6 +69,7 @@ html {
   background-color: var(--pink);
   color: var(--white);
   border: 1px solid var(--pink);
+  cursor: pointer;
 }
 
 .info__item:first-child {
@@ -76,7 +80,7 @@ html {
 }
 
 .list__item {
-    margin-bottom: 0.6rem;
+  margin-bottom: 0.6rem;
   padding: 0.8rem 4rem 0.8rem 1.1rem;
   display: flex;
   align-items: center;
@@ -85,8 +89,19 @@ html {
 }
 
 .list__item:last-child {
-    margin-bottom: 0rem;
+  margin-bottom: 0rem;
 }
+
+.info__item:focus {
+    outline: none;
+    border: 1px solid var(--red);
+}
+
+.info__item--submit:focus {
+    outline: none;
+    border: 1px solid var(--white);
+}
+
 
 .data {
   flex: 1;
@@ -128,6 +143,12 @@ html {
   font-size: 0.8rem;
   background-color: var(--white);
   border-radius: 50%;
+  transition: all 0.5s ease-in;
+  cursor: pointer;
+}
+
+.control__item:hover {
+  background-color: var(--green);
 }
 
 .control__item i {
