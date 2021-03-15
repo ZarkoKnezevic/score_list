@@ -188,7 +188,7 @@ document.querySelector('[data-hook="form"]').addEventListener("submit", (e) => {
   if (firstName === "" || lastName === "" || country === "" || points === "") {
     UI.showAlert("Please fill all the fields", "error");
   }
-  if (isNaN(points)) {
+  else if (isNaN(points)) {
     UI.showAlert("Player Score must be a Number", "error");
   } else {
     // Instantiate a Score
