@@ -25,19 +25,6 @@ html {
   color: var(--grey);
 }
 
-.placeholder {
-  position: absolute;
-  top: 2rem;
-  bottom: 2rem;
-  left: 2rem;
-  right: 2rem;
-  height: 34rem;
-  background: url(./score_list_placeholder.png) center no-repeat;
-  background-size: contain;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .container {
   position: relative;
   padding: 2rem 8rem;

@@ -14,7 +14,20 @@ class Score {
 class UI {
   static getDate() {
     const date = new Date();
-    const months = ["January", "February", "March", "April", "May", "Jun", "July", "August", "September", "October", "November", "December"];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "Jun",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     const year = date.getFullYear();
     const month = months[date.getMonth()];
     const day = date.getDate();
@@ -24,11 +37,9 @@ class UI {
     return `${month.slice(0, 3)} ${day}, ${year} ${hour}:${minutes}`;
   }
 
-  static displayScores() {
-    let scores = Store.getScores();
-    const sortedScores = scores.sort((a, b) => b.score - a.score);
-    console.log(sortedScores);
-    sortedScores.forEach((score) => UI.addScoreToList(score));
+  static displayScores(data) {
+    const scores = data;
+    scores.forEach((score) => UI.addScoreToList(score));
   }
 
   static addScoreToList(score) {
@@ -38,51 +49,51 @@ class UI {
     div.classList.add("list__item");
 
     div.innerHTML += `
-  <div class="data">
-      <div class="data__item data__item--primary">
-          <h3>${score.firstName} ${score.lastName}</h3>
-          <p>${score.date}</p>
-      </div>
-      <!--data__item-->
-      <div class="data__item data__item--secondary">
-          <h3>${score.country}</h3>
-      </div>
-      <!--data__item-->
-      <div class="data__item data__item--tertiary">
-          <h3>${score.score}</h3>
-      </div>
-      <!--data__item-->
-  </div>
-  <!--data-->
-      <div class="control" id="${score.id}">
-      <div class="control__item control__item--delete" data-hook="delete-btn">
-              <i class="far fa-trash-alt"></i>
-      </div>
-      <!--control__item-->
-      <div class="control__item control__item--increase" data-hook="increase">+5</div>
-      <!--control__item-->
-      <div class="control__item control__item--decrease" data-hook="decrease">-5</div>
-      <!--control__item-->
-      </div>
-      <!--control-->
-  </div>
-`;
+    <div class="data">
+        <div class="data__item data__item--primary">
+            <h3>${score.firstName} ${score.lastName}</h3>
+            <p>${score.date}</p>
+        </div>
+        <!--data__item-->
+        <div class="data__item data__item--secondary">
+            <h3>${score.country}</h3>
+        </div>
+        <!--data__item-->
+        <div class="data__item data__item--tertiary">
+            <h3>${score.score}</h3>
+        </div>
+        <!--data__item-->
+    </div>
+    <!--data-->
+        <div class="control" id="${score.id}">
+        <div class="control__item control__item--delete" data-hook="delete-btn">
+                <i class="far fa-trash-alt"></i>
+        </div>
+        <!--control__item-->
+        <div class="control__item control__item--increase" data-hook="increase">+5</div>
+        <!--control__item-->
+        <div class="control__item control__item--decrease" data-hook="decrease">-5</div>
+        <!--control__item-->
+        </div>
+        <!--control-->
+    </div>
+  `;
 
     list.appendChild(div);
   }
 
-  static deleteScore(target) {
+  static deleteScore(target, data) {
     if (target.classList.contains("control__item--delete")) {
       target.parentElement.parentElement.remove();
-      Store.removeScore(Number(target.parentElement.id));
+      Store.removeScore(Number(target.parentElement.id), data);
     }
   }
 
-  static changeScore(target, operation) {
+  static changeScore(target, operation, data) {
     if (target.classList.contains(`control__item--${operation}`)) {
       const element = target.parentElement;
       const id = element.id;
-      Store.manipulateScore(id, operation);
+      Store.manipulateScore(id, operation, data);
     }
   }
 
@@ -101,10 +112,10 @@ class UI {
     document.querySelector('[data-hook="form"]').reset();
   }
 
-  static render() {
+  static render(data) {
     const list = document.querySelector('[data-hook="list"]');
     list.innerHTML = "";
-    UI.displayScores();
+    UI.displayScores(data);
   }
 }
 
@@ -112,34 +123,36 @@ class UI {
 class Store {
   static getScores() {
     let scores;
+    let sortedScores;
     if (localStorage.getItem("scores") === null) {
-      scores = [];
+      sortedScores = [];
     } else {
       scores = JSON.parse(localStorage.getItem("scores"));
+      sortedScores = scores.sort((a, b) => b.score - a.score);
     }
-
-    return scores;
+    return sortedScores;
   }
 
-  static addScore(score) {
-    let scores = Store.getScores();
+  static addScore(score, data) {
+    let scores = data;
     scores.push(score);
-    const sortedScores = scores.sort((a, b) => b.score - a.score);
+    let sortedScores = scores.sort((a, b) => b.score - a.score);
     localStorage.setItem("scores", JSON.stringify(sortedScores));
-    UI.render();
+    UI.render(sortedScores);
   }
 
-  static manipulateScore(id, operation) {
-    let scores = Store.getScores();
+  static manipulateScore(id, operation, data) {
+    let scores = data;
     let newScores;
+    let sortedScores;
 
-    if (operation === 'increase') {
+    if (operation === "increase") {
       newScores = scores.map((score) => {
         if (score.id == id) {
           score.score += 5;
         }
         return score;
-      })
+      });
     } else {
       newScores = scores.map((score) => {
         if (score.id == id) {
@@ -148,77 +161,89 @@ class Store {
         return score;
       });
     }
-  
-    const sortedScores = newScores.sort((a, b) => b.score - a.score);
-    localStorage.setItem('scores', JSON.stringify(sortedScores));
 
-    UI.render();
+    sortedScores = newScores.sort((a, b) => b.score - a.score);
+    localStorage.setItem("scores", JSON.stringify(sortedScores));
+    UI.render(sortedScores);
   }
 
-  static removeScore(id) {
-    const scores = Store.getScores();
+  static removeScore(id, data) {
+    const scores = data;
     scores.forEach((score, index) => {
       if (score.id === id) {
         scores.splice(index, 1);
       }
     });
 
-    const sortedScores = scores.sort((a, b) => b.score - a.score);
-    localStorage.setItem("scores", JSON.stringify(sortedScores));
+    localStorage.setItem("scores", JSON.stringify(scores));
   }
-
 }
 
 // Display List
-document.addEventListener("DOMContentLoaded", UI.displayScores);
+document.addEventListener("DOMContentLoaded", () => {
+  const data = [...Store.getScores()];
+  console.log(data);
+  UI.displayScores(data);
+  addEventListeners(data);
+});
 
 // Event: Add the Score
-document.querySelector('[data-hook="form"]').addEventListener("submit", (e) => {
-  e.preventDefault();
-  // Get Form values
-  const firstName = document.querySelector('[data-hook="first-name"]').value;
-  const lastName = document.querySelector('[data-hook="last-name"]').value;
-  const country = document.querySelector('[data-hook="country"]').value;
-  const points = document.querySelector('[data-hook="score"]').value;
-  // Get Date and Time Values
-  const date = UI.getDate();
-  const id = new Date().getTime();
+function addEventListeners(data) {
+  document
+    .querySelector('[data-hook="form"]')
+    .addEventListener("submit", (e) => {
+      e.preventDefault();
+      // Get Form values
+      const firstName = document.querySelector('[data-hook="first-name"]')
+        .value;
+      const lastName = document.querySelector('[data-hook="last-name"]').value;
+      const country = document.querySelector('[data-hook="country"]').value;
+      const points = document.querySelector('[data-hook="score"]').value;
+      // Get Date and Time Values
+      const date = UI.getDate();
+      const id = new Date().getTime();
 
-  // Validate
-  if (firstName === "" || lastName === "" || country === "" || points === "") {
-    UI.showAlert("Please fill all the fields", "error");
-  }
-  else if (isNaN(points)) {
-    UI.showAlert("Player Score must be a Number", "error");
-  } else {
-    // Instantiate a Score
-    const score = new Score(firstName, lastName, country, points, date, id);
-    UI.addScoreToList(score);
+      // Validate
+      if (
+        firstName === "" ||
+        lastName === "" ||
+        country === "" ||
+        points === ""
+      ) {
+        UI.showAlert("Please fill all the fields", "error");
+      } else if (isNaN(points)) {
+        UI.showAlert("Player Score must be a Number", "error");
+      } else {
+        // Instantiate a Score
+        const score = new Score(firstName, lastName, country, points, date, id);
+        UI.addScoreToList(score);
 
-    // Score to store
-    Store.addScore(score);
+        // Score to store
+        Store.addScore(score, data);
 
-    // Show Success Message
-    UI.showAlert("Score added", "success");
+        // Show Success Message
+        UI.showAlert("Score added", "success");
 
-    // Clear Fields
-    UI.clearFields();
-  }
-});
+        // Clear Fields
+        UI.clearFields();
+      }
+    });
 
-document.querySelector('[data-hook="list"]').addEventListener("click", (e) => {
-  // Event: Remove The Score
-  UI.deleteScore(e.target);
+  document
+    .querySelector('[data-hook="list"]')
+    .addEventListener("click", (e) => {
+      // Event: Remove The Score
+      UI.deleteScore(e.target, data);
 
-  // Event: Add 5 points 
-  UI.changeScore(e.target, 'increase');
+      // Event: Add 5 points
+      UI.changeScore(e.target, "increase", data);
 
-  // Event: Remove 5 points
-  UI.changeScore(e.target, 'decrease');
+      // Event: Remove 5 points
+      UI.changeScore(e.target, "decrease", data);
 
-  // Show Success Message
-  if (e.target.classList.contains('control__item--delete')) {
-    UI.showAlert("Score Removed", "error");
-  }
-});
-
+      // Show Success Message
+      if (e.target.classList.contains("control__item--delete")) {
+        UI.showAlert("Score Removed", "error");
+      }
+    });
+}
